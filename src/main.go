@@ -18,8 +18,8 @@ func main() {
 	fileserver := http.FileServer(http.Dir(rootDoc + "/assets"))
 	http.Handle("/static/", http.StripPrefix("/static/", fileserver))
 
-	http.HandleFunc("/Homepage", func(w http.ResponseWriter, r *http.Request) {
-		err := listTemplate.ExecuteTemplate(w, "Homepage.html", nil)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		err := listTemplate.ExecuteTemplate(w, "Homepage", nil)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

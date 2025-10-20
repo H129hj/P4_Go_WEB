@@ -1,11 +1,48 @@
+{{define "Homepage"}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page d'accueil</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/css/style.css">
+  <title>Puissance 4 - Accueil</title>
 </head>
 <body>
-    <h1>Test Homepage</h1>
+  <header>
+    <h1>Puissance4 Web</h1>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h2>Bienvenue sur Puissance 4 Web</h2>
+      <p>
+        Puissance 4 Web est une version en ligne du jeu Puissance 4.
+        Affrontez vos amis et alignez 4 pions (en lignes ou en diagonales) avant votre adversaire !
+      </p>
+    </section>
+
+    <section class="rules">
+      <h2>Règles du jeu</h2>
+      <ul>
+        <li>Deux joueurs s’affrontent à tour de rôle.</li>
+        <li>Chaque joueur place un pion dans une colonne.</li>
+        <li>Le premier à aligner quatre pions de sa couleur (horizontalement, verticalement ou en diagonale) gagne la partie.</li>
+        <li>Si la grille est pleine sans gagnant, c’est une égalité !</li>
+      </ul>
+    </section>
+
+    <section class="instructions">
+      <h2>Mode d’emploi</h2>
+      <p>
+        Pour jouer, cliquez sur le bouton ci-dessous. Vous serez redirigé vers la page de jeu,
+        où vous pourrez choisir votre mode de jeu et commencer à placer vos pions.
+      </p>
+    </section>
+
+    <div class="start-container">
+      <a href="game.html" class="start-btn"> Commencer une partie</a>
+    </div>
+  </main>
 </body>
 </html>
+{{end}}
