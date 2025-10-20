@@ -5,9 +5,6 @@ import (
 	"net/http"
 	"html/template"
 	"os"
-	"regexp"
-	"strconv"
-	"strings"
 )
 
 func main() {
