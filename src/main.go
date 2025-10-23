@@ -34,6 +34,10 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/game/init/traitement", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "game/play", http.StatusSeeOther)
+	})
+
 	http.HandleFunc("/game/play", func(w http.ResponseWriter, r *http.Request) {
 		err := listTemplate.ExecuteTemplate(w, "Gameplay", nil)
 		if err != nil {
