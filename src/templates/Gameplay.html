@@ -5,35 +5,63 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/static/css/style.css">
-    <title>Puissance 4 - Jeu</title>
+  <title>Puissance 4 - Jeu</title>
 </head>
 <body>
-    <header>
-        <h1>Puissance4 Web - Jeu</h1>
-    </header>
+  <header>
+    <h1>Puissance4</h1>
+  </header>
+
+  <main class="game-container">
+    {{if .Error}}
+      <div class="flash error">{{.Error}}</div>
+    {{end}}
+
+    {{if .Winner}}
+      <div class="flash winner">Le joueur <strong>{{.Winner}}</strong> a gagné !</div>
+    {{else}}
+      <div class="turn">Au tour de : <strong>{{.CurrentPlayer}}</strong></div>
+    {{end}}
 
     <section class="board-section">
-    <table class ="Puissance4">
-      <caption class="hidden">Grille de jeu Puissance 4</caption>
-       {{/* On suppose que .Grid comme slice de lignes, chaque ligne slice des colonnes */}}
-       {{range $r := .Grid}}
-         <tr>
-              {{range $c := $r}}
-                 <td class="cell token-{{$c}}">
-                    {{if eq $c 1}}
-                      <span class="token red" aria-label="Jeton rouge"></span>
-                    {{else if eq $c 2}}
-                      <span class="token yellow" aria-label="Jeton jaune"></span>
-                    {{else}}
-                      <span class="token empty" aria-label="Case vide"></span>
-                    {{end}}
-                    </td>
+      <table class="connect4" role="grid" aria-label="Grille Puissance 4">
+        <caption class="visually-hidden">Grille de jeu</caption>
+        {{/* .Grid : slice de lignes (de haut en bas), chaque ligne slice des colonnes */}}
+        {{range $r := .Grid}}
+          <tr>
+            {{range $c := $r}}
+              <td class="cell token-{{$c}}">
+                {{if eq $c 1}}
+                  <span class="disc red" aria-hidden="true"></span>
+                {{else if eq $c 2}}
+                  <span class="disc yellow" aria-hidden="true"></span>
+                {{else}}
+                  <span class="disc empty" aria-hidden="true"></span>
                 {{end}}
-            </tr>
+              </td>
+            {{end}}
+          </tr>
         {{end}}
-    </table>
- </section>
+      </table>
+    </section>
 
+    {{if not .Winner}}
+    <section class="controls">
+      <form action="/game/play/traitement" method="POST" class="move-form">
+        {{if .Game}}
+          <input type="hidden" name="game_id" value="{{.Game.ID}}">
+        {{end}}
+        <label for="column">Colonne (1-7) :</label>
+        <input id="column" name="column" type="number" min="1" max="7" required>
+        <button type="submit" class="play-btn">Jouer</button>
+      </form>
+    </section>
+    {{end}}
+
+    <footer class="game-footer">
+      <a href="/" class="start-btn">Retour</a>
+    </footer>
+  </main>
 </body>
 </html>
 {{end}}
