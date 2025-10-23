@@ -1,4 +1,4 @@
-{{define "Gameplay"}}
+{{define "GamePlay"}}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -11,7 +11,7 @@
     <header>
         <h1>Puissance4 Web - Jeu</h1>
     </header>
-
+ 
     <section class="board-section">
     <table class ="Puissance4">
       <caption class="hidden">Grille de jeu Puissance 4</caption>
@@ -33,8 +33,8 @@
         {{end}}
     </table>
  </section>
-
-
+ 
+ 
  {{if not .Winner}}
 <section class="controls">
   <form action="/game/play/traitement"
@@ -52,8 +52,8 @@
     </form>
 </section>
 {{end}}
-
-
+ 
+ 
 {{if .Winner}}  
 <section class="winner-announcement" role="alert">
     <h2>Félicitations !</h2>

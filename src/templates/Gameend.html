@@ -1,0 +1,49 @@
+{{define "Gameend"}}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/css/style.css">
+    <title>Puissance 4 - Fin de partie</title>
+</head>
+<body>
+    <header>
+        <h1>Puissance4 Web - Fin de partie</h1>
+    </header>
+
+    <main class="gameend-container">
+      {{if .Winner}}  
+        <section class="winner-announcement" role="alert">
+            <h2>Félicitations !</h2>
+            <p>Le joueur {{.Winner}} a gagné la partie !</p>
+        </section>
+      {{else}}
+        <section class="draw-announcement" role="alert">
+            <h2>Match nul !</h2>
+            <p>La partie s'est terminée par une égalité.</p>
+        </section>
+      {{end}}
+
+      <div class="restart-container">
+        <a href="/game/init" class="restart-btn">Recommencer une partie</a>
+      </div>
+    </main>
+</body>
+</html>
+{{end}}
+        </section>
+        {{else}}
+            <section class="draw-announcement" role="alert">
+                <h2>Match nul !</h2>
+                <p>La partie s'est terminée par une égalité.</p>
+            </section>
+        {{end}}
+    
+        <div class="restart-container">
+            <a href="/game/init" class="restart-btn">Recommencer une partie</a>
+        </div>
+        </main>
+</body>
+</html>
+{{end}}
