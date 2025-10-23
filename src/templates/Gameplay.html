@@ -1,0 +1,66 @@
+{{define "Gameplay"}}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/css/style.css">
+    <title>Puissance 4 - Jeu</title>
+</head>
+<body>
+    <header>
+        <h1>Puissance4 Web - Jeu</h1>
+    </header>
+
+    <section class="board-section">
+    <table class ="Puissance4">
+      <caption class="hidden">Grille de jeu Puissance 4</caption>
+       {{/* On suppose que .Grid comme slice de lignes, chaque ligne slice des colonnes */}}
+       {{range $r := .Grid}}
+         <tr>
+              {{range $c := $r}}
+                 <td class="cell token-{{$c}}">
+                    {{if eq $c 1}}
+                      <span class="token red" aria-label="Jeton rouge"></span>
+                    {{else if eq $c 2}}
+                      <span class="token yellow" aria-label="Jeton jaune"></span>
+                    {{else}}
+                      <span class="token empty" aria-label="Case vide"></span>
+                    {{end}}
+                    </td>
+                {{end}}
+            </tr>
+        {{end}}
+    </table>
+ </section>
+
+
+ {{if not .Winner}}
+<section class="controls">
+  <form action="/game/play/traitement"
+            method="POST"
+            class="move-form"
+            aria-label="Formulaire pour jouer un coup">
+            <label for="column-select">Choisissez une colonne :</label>
+            <select id="column-select" name="column" required>
+                {{/* On suppose que .Columns est le nombre de colonnes */}}
+                {{range $i, $e := .Columns}}
+                    <option value="{{$i}}">{{$i}}</option>
+                {{end}}
+            </select>
+            <button type="submit" class="play-btn">Jouer</button>
+    </form>
+</section>
+{{end}}
+
+
+{{if .Winner}}  
+<section class="winner-announcement" role="alert">
+    <h2>Félicitations !</h2>
+    <p>Le joueur {{.Winner}} a gagné la partie !</p>
+    <a href="/game/new" class="new-game-btn">Nouvelle Partie</a>
+</section>
+{{end}}
+</body>
+</html>
+{{end}}
