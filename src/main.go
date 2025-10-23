@@ -34,5 +34,9 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/game/init/traitement", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/game/play", http.StatusSeeOther)
+	})
+
 	http.ListenAndServe("localhost:8000", nil)
 }
