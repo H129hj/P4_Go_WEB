@@ -38,5 +38,13 @@ func main() {
 		http.Redirect(w, r, "/game/play", http.StatusSeeOther)
 	})
 
+	http.HandleFunc("/game/play", func(w http.ResponseWriter, r *http.Request) {
+		err := listTemplate.ExecuteTemplate(w, "GamePlay", nil)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	})
+
 	http.ListenAndServe("localhost:8000", nil)
 }
