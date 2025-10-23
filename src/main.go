@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"html/template"
+	"net/http"
 	"os"
 )
 
@@ -28,6 +28,14 @@ func main() {
 
 	http.HandleFunc("/game/init", func(w http.ResponseWriter, r *http.Request) {
 		err := listTemplate.ExecuteTemplate(w, "GameInit", nil)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	})
+
+	http.HandleFunc("/game/play", func(w http.ResponseWriter, r *http.Request) {
+		err := listTemplate.ExecuteTemplate(w, "Gameplay", nil)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
