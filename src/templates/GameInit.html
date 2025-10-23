@@ -1,0 +1,37 @@
+{{define "GameInit"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>Page d'initialisation</title>
+</head>
+<body>
+    <main class="init-container">
+      <h1>Entrez les pseudos des joueurs</h1>
+      <form action="/game/init/traitement" method="POST" class="init-form">
+        <label for="name">Nom du joueur 1 :</label>
+        <input type="text" id="name" name="name" placeholder="Ex : Alice" required>
+
+        <br>
+
+        <label for="name2">Nom du joueur 2 :</label>
+        <input type="text" id="name2" name="name2" placeholder="Ex : Bob" required>
+
+        <br>
+
+        <label for="jetoncolor">Couleur du jeton (joueur 1) :</label>
+        <select id="jetoncolor" name="jetoncolor" required>
+          <option value="rouge">Rouge</option>
+          <option value="jaune">Jaune</option>
+        </select>
+
+        <br>
+
+        <button type="submit" class="start-btn">Commencer la partie</button>
+      </form>
+  </main>
+</body>
+</html>
+{{end}}

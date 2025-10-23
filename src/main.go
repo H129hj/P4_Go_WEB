@@ -26,5 +26,13 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/game/init", func(w http.ResponseWriter, r *http.Request) {
+		err := listTemplate.ExecuteTemplate(w, "GameInit", nil)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	})
+
 	http.ListenAndServe("localhost:8000", nil)
 }
