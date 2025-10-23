@@ -39,7 +39,7 @@ func main() {
 	})
 
 	http.HandleFunc("/game/play", func(w http.ResponseWriter, r *http.Request) {
-		err := listTemplate.ExecuteTemplate(w, "Gameplay", nil)
+		err := listTemplate.ExecuteTemplate(w, "GamePlay", nil)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

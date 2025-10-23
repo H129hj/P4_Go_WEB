@@ -1,4 +1,4 @@
-{{define "Gameplay"}}
+{{define "GamePlay"}}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -53,14 +53,6 @@
 </section>
 {{end}}
 
-
-{{if .Winner}}  
-<section class="winner-announcement" role="alert">
-    <h2>Félicitations !</h2>
-    <p>Le joueur {{.Winner}} a gagné la partie !</p>
-    <a href="/game/new" class="new-game-btn">Nouvelle Partie</a>
-</section>
-{{end}}
 </body>
 </html>
 {{end}}
