@@ -33,34 +33,6 @@
         {{end}}
     </table>
  </section>
- 
- 
- {{if not .Winner}}
-<section class="controls">
-  <form action="/game/play/traitement"
-            method="POST"
-            class="move-form"
-            aria-label="Formulaire pour jouer un coup">
-            <label for="column-select">Choisissez une colonne :</label>
-            <select id="column-select" name="column" required>
-                {{/* On suppose que .Columns est le nombre de colonnes */}}
-                {{range $i, $e := .Columns}}
-                    <option value="{{$i}}">{{$i}}</option>
-                {{end}}
-            </select>
-            <button type="submit" class="play-btn">Jouer</button>
-    </form>
-</section>
-{{end}}
- 
- 
-{{if .Winner}}  
-<section class="winner-announcement" role="alert">
-    <h2>Félicitations !</h2>
-    <p>Le joueur {{.Winner}} a gagné la partie !</p>
-    <a href="/game/new" class="new-game-btn">Nouvelle Partie</a>
-</section>
-{{end}}
 </body>
 </html>
 {{end}}
