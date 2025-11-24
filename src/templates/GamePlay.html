@@ -1,38 +1,29 @@
 {{define "GamePlay"}}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/static/css/style.css">
-    <title>Puissance 4 - Jeu</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/game.css">
+    <title>Document</title>
 </head>
 <body>
     <header>
-        <h1>Puissance4 Web - Jeu</h1>
+        <h1>Template test</h1>
+        <p>Tour: {{.Tour}}</p>
+        <p>Joueur1: {{.Joueur1}}</p>
+        <p>Joueur2: {{.Joueur2}}</p>
     </header>
- 
-    <section class="board-section">
-    <table class ="Puissance4">
-      <caption class="hidden">Grille de jeu Puissance 4</caption>
-       {{/* On suppose que .Grid comme slice de lignes, chaque ligne slice des colonnes */}}
-       {{range $r := .Grid}}
-         <tr>
-              {{range $c := $r}}
-                 <td class="cell token-{{$c}}">
-                    {{if eq $c 1}}
-                      <span class="token red" aria-label="Jeton rouge"></span>
-                    {{else if eq $c 2}}
-                      <span class="token yellow" aria-label="Jeton jaune"></span>
-                    {{else}}
-                      <span class="token empty" aria-label="Case vide"></span>
-                    {{end}}
-                    </td>
-                {{end}}
-            </tr>
+
+    <div class="grille">
+    {{range .Grille}}
+    <div class="ligne">
+        {{range .}}
+        <div class="cellule {{if eq . "R"}}rouge{{else if eq . "J"}}jaune{{end}}"></div>
         {{end}}
-    </table>
- </section>
+    </div>
+    {{end}}
+</div>
 </body>
 </html>
 {{end}}
