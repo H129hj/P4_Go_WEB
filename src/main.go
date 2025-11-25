@@ -56,12 +56,10 @@ func main() {
         return
     }
 
-    // Récupération des valeurs du formulaire
     j1 := r.FormValue("name")
     j2 := r.FormValue("name2")
     jetonCouleur := r.FormValue("jetoncolor")
 
-    // Stockage dans la variable globale
     currentGame = GameData{
         Joueur1:      j1,
         Joueur2:      j2,
