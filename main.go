@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+// Gamestate represente l'état de la partie
 type GameState struct {
 	Grid          [6][7]string
 	PlayerNames   [2]string
@@ -21,6 +22,7 @@ type GameState struct {
 	Initialized   bool
 }
 
+// GamePage represente les donnees à passer au template de la page de jeu
 type GamePage struct {
 	Grille            [6][7]string
 	Joueur1           string
@@ -34,11 +36,10 @@ type GamePage struct {
 	Columns           []int
 }
 
-var (
-	tmpl      *template.Template
-	gameState GameState
-)
+var tmpl *template.Template
+var gameState GameState
 
+// Fonction qui démarre le serveur et configure les routes
 func main() {
 	var err error
 	tmpl, err = template.ParseGlob("./templates/*.html")
@@ -56,10 +57,12 @@ func main() {
 	http.HandleFunc("/game/init/traitement", handleInitSubmit)
 	http.HandleFunc("/game/play", handleGamePlay)
 	http.HandleFunc("/game/play/move", handleMove)
+	http.HandleFunc("/game/scoreboards", handleScoreboards)
 
 	http.ListenAndServe("localhost:8000", nil)
 }
 
+// Handlers pour les différentes routes
 func handleHomepage(w http.ResponseWriter, r *http.Request) {
 	if err := tmpl.ExecuteTemplate(w, "Homepage", nil); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -78,6 +81,7 @@ func handleInitSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Récupération et validation des données du formulaire
 	j1 := strings.TrimSpace(r.FormValue("name"))
 	j2 := strings.TrimSpace(r.FormValue("name2"))
 	jetonCouleur := r.FormValue("jetoncolor")
@@ -97,12 +101,13 @@ func handleInitSubmit(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGamePlay(w http.ResponseWriter, r *http.Request) {
-
+	// Vérification que le jeu est initialisé
 	if !gameState.Initialized {
 		http.Redirect(w, r, "/game/init", http.StatusSeeOther)
 		return
 	}
 
+	// Données pour le template de la page de jeu
 	page := buildPageData(gameState, r.URL.Query().Get("msg"))
 
 	if err := tmpl.ExecuteTemplate(w, "GamePlay", page); err != nil {
@@ -110,6 +115,8 @@ func handleGamePlay(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
+// Handler pour le traitement des coups joués
 func handleMove(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
@@ -122,11 +129,6 @@ func handleMove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !gameState.Initialized {
-		http.Redirect(w, r, "/game/init", http.StatusSeeOther)
-		return
-	}
-
 	if dropErr := gameState.Drop(col); dropErr != nil {
 		http.Redirect(w, r, "/game/play?msg="+url.QueryEscape(dropErr.Error()), http.StatusSeeOther)
 		return
@@ -135,6 +137,13 @@ func handleMove(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/game/play", http.StatusSeeOther)
 }
 
+func handleScoreboards(w http.ResponseWriter, r *http.Request) {
+	if err := tmpl.ExecuteTemplate(w, "Scoreboards", nil); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+// Réinitialise l'état du jeu avec la page game/init
 func (g *GameState) Reset(j1, j2, jeton string) {
 	g.Grid = [6][7]string{}
 	g.PlayerNames = [2]string{j1, j2}
@@ -149,6 +158,7 @@ func (g *GameState) Reset(j1, j2, jeton string) {
 	g.Initialized = true
 }
 
+// Logique pour déposer un jeton dans une colonne et vérifie l'état du jeu (gagnant, match nul)
 func (g *GameState) Drop(column int) error {
 	if g.Winner != "" || g.Draw {
 		return errors.New("La partie est terminée.")
@@ -177,6 +187,7 @@ func (g *GameState) Drop(column int) error {
 	return errors.New("Cette colonne est pleine.")
 }
 
+// Vérifie si un joueur a gagné
 func (g *GameState) hasWinner(row, col int, token string) bool {
 	directions := [][2]int{{0, 1}, {1, 0}, {1, 1}, {1, -1}}
 
@@ -190,6 +201,8 @@ func (g *GameState) hasWinner(row, col int, token string) bool {
 	return false
 }
 
+
+// Compte le nombre de jetons consécutifs dans une direction donnée
 func (g *GameState) countDirection(row, col, dr, dc int, token string) int {
 	count := 0
 	rCur := row + dr
@@ -204,6 +217,7 @@ func (g *GameState) countDirection(row, col, dr, dc int, token string) int {
 	return count
 }
 
+// Vérifie si le plateau est plein (match nul)
 func (g *GameState) isBoardFull() bool {
 	for _, cell := range g.Grid[0] {
 		if cell == "" {
@@ -214,6 +228,7 @@ func (g *GameState) isBoardFull() bool {
 	return true
 }
 
+// Construit les données à passer au template de la page de jeu
 func buildPageData(state GameState, message string) GamePage {
 	columns := make([]int, len(state.Grid[0]))
 	for i := range columns {
