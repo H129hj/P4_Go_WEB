@@ -9,7 +9,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync"
 )
 
 type GameState struct {
@@ -38,7 +37,6 @@ type GamePage struct {
 var (
 	tmpl      *template.Template
 	gameState GameState
-	stateMu   sync.Mutex
 )
 
 func main() {
@@ -93,16 +91,12 @@ func handleInitSubmit(w http.ResponseWriter, r *http.Request) {
 		jetonCouleur = "rouge"
 	}
 
-	stateMu.Lock()
 	gameState.Reset(j1, j2, jetonCouleur)
-	stateMu.Unlock()
 
 	http.Redirect(w, r, "/game/play", http.StatusSeeOther)
 }
 
 func handleGamePlay(w http.ResponseWriter, r *http.Request) {
-	stateMu.Lock()
-	defer stateMu.Unlock()
 
 	if !gameState.Initialized {
 		http.Redirect(w, r, "/game/init", http.StatusSeeOther)
@@ -127,9 +121,6 @@ func handleMove(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/game/play?msg="+url.QueryEscape("Choisissez une colonne valide."), http.StatusSeeOther)
 		return
 	}
-
-	stateMu.Lock()
-	defer stateMu.Unlock()
 
 	if !gameState.Initialized {
 		http.Redirect(w, r, "/game/init", http.StatusSeeOther)
