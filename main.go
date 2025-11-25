@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-// Gamestate represente l'état de la partie
+// Gamestate : l'état de la partie en cours
 type GameState struct {
 	Grid          [6][7]string
 	PlayerNames   [2]string
@@ -22,7 +22,7 @@ type GameState struct {
 	Initialized   bool
 }
 
-// GamePage represente les donnees à passer au template de la page de jeu
+// GamePage : Donnees à passer au template de la page de jeu
 type GamePage struct {
 	Grille            [6][7]string
 	Joueur1           string
@@ -39,7 +39,7 @@ type GamePage struct {
 var tmpl *template.Template
 var gameState GameState
 
-// Fonction qui démarre le serveur et configure les routes
+// Démarre le serveur et configure les routes
 func main() {
 	var err error
 	tmpl, err = template.ParseGlob("./templates/*.html")
