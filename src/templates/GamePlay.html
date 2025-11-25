@@ -1,29 +1,66 @@
 {{define "GamePlay"}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/game.css">
-    <title>Document</title>
+    <title>Puissance 4</title>
 </head>
 <body>
-    <header>
-        <h1>Template test</h1>
-        <p>Tour: {{.Tour}}</p>
-        <p>Joueur1: {{.Joueur1}}</p>
-        <p>Joueur2: {{.Joueur2}}</p>
-    </header>
-
-    <div class="grille">
-    {{range .Grille}}
-    <div class="ligne">
-        {{range .}}
-        <div class="cellule {{if eq . "R"}}rouge{{else if eq . "J"}}jaune{{end}}"></div>
+<header>
+    <h1>Puissance 4</h1>
+    <nav class="nav-links">
+        <a href="/">Accueil</a>
+        {{if or .Winner .Draw}}
+        <span aria-hidden="true">|</span>
+        <a href="/game/init">Recommencer une partie</a>
         {{end}}
+    </nav>
+    <div>
+        <p>Joueur 1 : {{.Joueur1}} ({{.JetonCouleur}})</p>
+        <p>Joueur 2 : {{.Joueur2}}</p>
     </div>
+    {{if .Message}}
+    <p class="message">{{.Message}}</p>
     {{end}}
-</div>
+    {{if .Winner}}
+    <p class="status">Gagnant : {{.Winner}}</p>
+    {{else if .Draw}}
+    <p class="status">Match nul !</p>
+    {{else}}
+    <p class="status">Au tour de {{.CurrentPlayerName}}</p>
+    {{end}}
+</header>
+
+<main>
+    {{if not .Winner}}
+    {{if not .Draw}}
+    <section class="actions">
+        <form action="/game/play/move" method="post">
+            <label for="column">Choisissez une colonne :</label>
+            <div class="colonnes">
+                {{range .Columns}}
+                <button type="submit" name="column" value="{{.}}" aria-label="Choisir la colonne {{.}}" title="Choisir la colonne {{.}}">
+                    &darr;
+                </button>
+                {{end}}
+            </div>
+        </form>
+    </section>
+    {{end}}
+    {{end}}
+
+    <section class="grille">
+        {{range .Grille}}
+        <div class="ligne">
+            {{range .}}
+            <div class="cellule {{.}}"></div>
+            {{end}}
+        </div>
+        {{end}}
+    </section>
+</main>
 </body>
 </html>
 {{end}}
