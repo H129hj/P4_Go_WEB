@@ -81,7 +81,6 @@ ul {
   margin: 0 auto;
 }
 
-/* -- Styles additionnels pour la page de jeu (connect4) -- */
 .game-container {
   max-width: 720px;
   margin: 1.5rem auto;
