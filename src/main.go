@@ -68,7 +68,6 @@ func main() {
         JetonCouleur: jetonCouleur,
     }
 
-    // Redirection vers la page de jeu
     http.Redirect(w, r, "/game/play", http.StatusSeeOther)
 })
 
