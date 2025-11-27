@@ -12,9 +12,6 @@
     <h1>Puissance 4</h1>
     <nav class="nav-links">
         <a href="/" class="nav-btn">Accueil</a>
-        {{if or .Winner .Draw}}
-        <a href="/game/init" class="nav-btn">Recommencer une partie</a>
-        {{end}}
     </nav>
     <div class="players-info">
         <div class="player-card {{if eq .CurrentPlayerIndex 0}}active{{end}}" data-player="1">
