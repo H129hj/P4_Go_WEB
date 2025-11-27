@@ -12,6 +12,7 @@ type errorPageData struct {
 	Message string
 }
 
+// Redirection vers une page d'erreur customisée //
 func redirectToError(w http.ResponseWriter, r *http.Request, code int, message string) {
 	params := url.Values{}
 	if code > 0 {

@@ -105,7 +105,7 @@ func handleInitPage(w http.ResponseWriter, r *http.Request) {
 
 func handleInitSubmit(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		redirectToError(w, r, http.StatusMethodNotAllowed, "Méthode non autorisée")
+		redirectToError(w, r, http.StatusMethodNotAllowed, "méthode non autorisée")
 		return
 	}
 
@@ -114,7 +114,7 @@ func handleInitSubmit(w http.ResponseWriter, r *http.Request) {
 	jetonCouleur := r.FormValue("jetoncolor")
 
 	if j1 == "" || j2 == "" {
-		redirectToError(w, r, http.StatusBadRequest, "Les noms des joueurs sont requis")
+		redirectToError(w, r, http.StatusBadRequest, "les noms des joueurs sont requis")
 		return
 	}
 
@@ -130,7 +130,7 @@ func handleInitSubmit(w http.ResponseWriter, r *http.Request) {
 func handleGamePlay(w http.ResponseWriter, r *http.Request) {
 
 	if !gameState.Initialized {
-		redirectToError(w, r, http.StatusBadRequest, "La partie n'a pas été initialisée")
+		redirectToError(w, r, http.StatusBadRequest, "la partie n'a pas été initialisée")
 		return
 	}
 
@@ -147,12 +147,12 @@ func handleMove(w http.ResponseWriter, r *http.Request) {
 
 	col, err := strconv.Atoi(strings.TrimSpace(r.FormValue("column")))
 	if err != nil {
-		redirectToError(w, r, http.StatusBadRequest, "Choisissez une colonne valide.")
+		redirectToError(w, r, http.StatusBadRequest, "choisissez une colonne valide")
 		return
 	}
 
 	if !gameState.Initialized {
-		redirectToError(w, r, http.StatusBadRequest, "La partie n'a pas été initialisée")
+		redirectToError(w, r, http.StatusBadRequest, "la partie n'a pas été initialisée")
 		return
 	}
 
@@ -166,12 +166,12 @@ func handleMove(w http.ResponseWriter, r *http.Request) {
 
 func handleGameEnd(w http.ResponseWriter, r *http.Request) {
 	if !gameState.Initialized {
-		redirectToError(w, r, http.StatusBadRequest, "La partie n'a pas été initialisée")
+		redirectToError(w, r, http.StatusBadRequest, "la partie n'a pas été initialisée")
 		return
 	}
 
 	if gameState.Winner == "" && !gameState.Draw {
-		redirectToError(w, r, http.StatusBadRequest, "La partie n'est pas terminée")
+		redirectToError(w, r, http.StatusBadRequest, "la partie n'est pas terminée")
 		return
 	}
 
@@ -221,7 +221,7 @@ func saveGameRecord() {
 	// Sauvegarder dans le fichier
 	file, err := os.OpenFile("leaderboard.txt", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
-		fmt.Printf("Erreur lors de l'ouverture du fichier: %v\n", err)
+		fmt.Printf("erreur lors de l'ouverture du fichier: %v\n", err)
 		return
 	}
 	defer file.Close()
@@ -229,7 +229,7 @@ func saveGameRecord() {
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(records); err != nil {
-		fmt.Printf("Erreur lors de l'écriture: %v\n", err)
+		fmt.Printf("erreur lors de l'écriture: %v\n", err)
 		return
 	}
 }
@@ -279,7 +279,7 @@ func handleGameGrid(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/game/grid/")
 	id, err := strconv.Atoi(path)
 	if err != nil {
-		redirectToError(w, r, http.StatusBadRequest, "ID invalide")
+		redirectToError(w, r, http.StatusBadRequest, "id invalide")
 		return
 	}
 
@@ -293,7 +293,7 @@ func handleGameGrid(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if foundRecord == nil {
-		redirectToError(w, r, http.StatusNotFound, "Partie non trouvée")
+		redirectToError(w, r, http.StatusNotFound, "partie non trouvée")
 		return
 	}
 
@@ -321,11 +321,11 @@ func (g *GameState) Reset(j1, j2, jeton string) {
 
 func (g *GameState) Drop(column int) error {
 	if g.Winner != "" || g.Draw {
-		return errors.New("La partie est terminée.")
+		return errors.New("la partie est terminée")
 	}
 
 	if column < 0 || column >= len(g.Grid[0]) {
-		return errors.New("Colonne inexistante.")
+		return errors.New("colonne inexistante")
 	}
 
 	for row := len(g.Grid) - 1; row >= 0; row-- {
@@ -345,7 +345,7 @@ func (g *GameState) Drop(column int) error {
 		}
 	}
 
-	return errors.New("Cette colonne est pleine.")
+	return errors.New("cette colonne est pleine")
 }
 
 func (g *GameState) hasWinner(row, col int, token string) bool {

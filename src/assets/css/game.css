@@ -306,6 +306,7 @@ main {
     align-items: center;
     gap: 30px;
     padding: 20px;
+
 }
 
 .end-game-result {
@@ -368,7 +369,7 @@ main {
     margin: 0;
 }
 
-/* Styles pour le leaderboard */
+ /* Styles pour le leaderboard */
 .leaderboard-main {
     display: flex;
     flex-direction: column;
@@ -533,3 +534,4 @@ main {
 .grid-view-grille {
     margin-top: 10px;
 }
+
