@@ -15,7 +15,7 @@ Puissance 4 Web reprend les règles classiques (grille 6x7, deux joueurs). L’a
 - Interface web responsive (HTML/CSS)
 - Saisie des pseudos + choix visuel de la couleur du joueur 1
 - Indicateur de tour et boutons colonne alignés à la grille
-- Redirection automatique vers la page de fin (timer 3 s)
+- Redirection automatique vers la page de fin (timer 1,5 s)
 - Leaderboard persistant (`leaderboard.txt`) avec date, vainqueur, nombre de tours
 - Accès à la grille finale depuis le leaderboard
 - Détection des victoires horizontales, verticales, diagonales + détection du nul
