@@ -46,6 +46,27 @@ Puissance 4 Web reprend les règles classiques (grille 6x7, deux joueurs). L’a
 - `leaderboard.txt` : stockage JSON des parties terminées
 - `src/main.go` : serveur HTTP, logique métier, persistance
 
+## Structure du projet
+```
+P4_Go_WEB/
+├─ README.md
+└─ src/
+   ├─ main.go
+   ├─ leaderboard.txt
+   ├─ assets/
+   │  └─ css/
+   │     ├─ game.css
+   │     └─ style.css
+   └─ templates/
+      ├─ Homepage.html
+      ├─ GameInit.html
+      ├─ GamePlay.html
+      ├─ GameEnd.html
+      ├─ Leaderboard.html
+      └─ GameGrid.html
+```
+
+
 ## Notes techniques
 - Serveur Go standard (`net/http`)
 - Template réalisé en html + css
