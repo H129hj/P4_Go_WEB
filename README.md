@@ -1,17 +1,11 @@
 # P4_Web_Hugo_Shakil
 Ce projet est une implémentation web du jeu Puissance 4 en Go. Il sert de support pour pratiquer Go, le templating HTML et la persistance simple côté serveur.
 
-## Comment lancer le jeu
-Il existe deux méthodes :
+## Comment lancer le serveur :
 
-### 1. Exécutable (la plus simple)
-- Double-cliquez sur `P4_Web.exe`
-- Ou lancez `.\P4_Web.exe` depuis un terminal
-
-### 2. Code source (Go requis)
 ```bash
 cd src
-go run main.go
+go run .
 ```
 
 ## Description
@@ -46,10 +40,10 @@ Puissance 4 Web reprend les règles classiques (grille 6x7, deux joueurs). L’a
 - `src/main.go` : serveur HTTP, logique métier, persistance
 
 ## Notes techniques
-- Serveur Go standard (`net/http`) + `html/template`
+- Serveur Go standard (`net/http`)
+- Template réalisé en html + css
 - Grille stockée en mémoire puis sérialisée en JSON
 - Leaderboard géré via `encoding/json` sur un fichier local
-- Aucun bundler JS : interactions simples réalisées en HTML/CSS + JS natif léger
 
 ## Développé par
 - BERTON Hugo
