@@ -5,9 +5,7 @@ Ce projet est une implémentation web du jeu Puissance 4 en Go. Il sert de suppo
 ```bash
 git clone https://github.com/H129hj/P4_Go_WEB
 cd P4_Go_WEB
-```
 
-```bash
 cd src
 go run .
 ```
