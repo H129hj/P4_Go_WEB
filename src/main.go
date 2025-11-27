@@ -81,7 +81,8 @@ func main() {
 	rootDoc, _ := os.Getwd()
 	fileServer := http.FileServer(http.Dir(rootDoc + "/assets"))
 	http.Handle("/static/", http.StripPrefix("/static/", fileServer))
-
+	
+	// Initialisation des routes
 	http.HandleFunc("/", handleHomepage)
 	http.HandleFunc("/game/init", handleInitPage)
 	http.HandleFunc("/game/init/traitement", handleInitSubmit)
@@ -95,6 +96,7 @@ func main() {
 	http.ListenAndServe("localhost:8000", nil)
 }
 
+// Tous les handlers liés aux routes
 func handleHomepage(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, r, "Homepage", nil)
 }
@@ -128,7 +130,6 @@ func handleInitSubmit(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGamePlay(w http.ResponseWriter, r *http.Request) {
-
 	if !gameState.Initialized {
 		redirectToError(w, r, http.StatusBadRequest, "la partie n'a pas été initialisée")
 		return
@@ -175,7 +176,7 @@ func handleGameEnd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Sauvegarder la partie dans le leaderboard
+	// Sauvegarde la partie dans le leaderboard
 	saveGameRecord()
 
 	page := EndPage{
@@ -304,6 +305,7 @@ func handleGameGrid(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, r, "GameGrid", page)
 }
 
+// Permet de réinitialiser l'état du jeu (plateau, joueurs, jetons, etc.)
 func (g *GameState) Reset(j1, j2, jeton string) {
 	g.Grid = [6][7]string{}
 	g.PlayerNames = [2]string{j1, j2}
@@ -319,6 +321,7 @@ func (g *GameState) Reset(j1, j2, jeton string) {
 	g.TurnCount = 0
 }
 
+// Permet de déposer un jeton dans une colonne
 func (g *GameState) Drop(column int) error {
 	if g.Winner != "" || g.Draw {
 		return errors.New("la partie est terminée")
@@ -348,6 +351,7 @@ func (g *GameState) Drop(column int) error {
 	return errors.New("cette colonne est pleine")
 }
 
+// Permet de vérifier s'il y a un gagnant après un coup
 func (g *GameState) hasWinner(row, col int, token string) bool {
 	directions := [][2]int{{0, 1}, {1, 0}, {1, 1}, {1, -1}}
 
@@ -361,6 +365,7 @@ func (g *GameState) hasWinner(row, col int, token string) bool {
 	return false
 }
 
+// Permet de compter le nombre de jetons consécutifs dans une direction donnée
 func (g *GameState) countDirection(row, col, dr, dc int, token string) int {
 	count := 0
 	rCur := row + dr
@@ -375,6 +380,7 @@ func (g *GameState) countDirection(row, col, dr, dc int, token string) int {
 	return count
 }
 
+// Permet de vérifier si le plateau est plein
 func (g *GameState) isBoardFull() bool {
 	for _, cell := range g.Grid[0] {
 		if cell == "" {
@@ -385,6 +391,7 @@ func (g *GameState) isBoardFull() bool {
 	return true
 }
 
+// Méthode qui construit les données nécessaires pour afficher la page de jeu
 func buildPageData(state GameState, message string) GamePage {
 	columns := make([]int, len(state.Grid[0]))
 	for i := range columns {
