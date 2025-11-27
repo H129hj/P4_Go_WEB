@@ -1,0 +1,23 @@
+{{define "Error"}}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>Erreur</title>
+</head>
+<body class="error-page">
+    <div class="error-container">
+        <h1>Une erreur est survenue</h1>
+        {{if .Code}}<p class="error-code">Code : {{.Code}}</p>{{end}}
+        <p class="error-message">{{if .Message}}{{.Message}}{{else}}Veuillez réessayer plus tard.{{end}}</p>
+        <div class="error-actions">
+            <a href="/" class="nav-btn">Retour à l'accueil</a>
+            <a href="/game/init" class="nav-btn secondary">Nouvelle partie</a>
+        </div>
+    </div>
+</body>
+</html>
+{{end}}
+

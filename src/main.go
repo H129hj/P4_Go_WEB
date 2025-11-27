@@ -90,25 +90,22 @@ func main() {
 	http.HandleFunc("/game/end", handleGameEnd)
 	http.HandleFunc("/game/leaderboard", handleLeaderboard)
 	http.HandleFunc("/game/grid/", handleGameGrid)
+	http.HandleFunc("/error", handleErrorDisplay)
 
 	http.ListenAndServe("localhost:8000", nil)
 }
 
 func handleHomepage(w http.ResponseWriter, r *http.Request) {
-	if err := tmpl.ExecuteTemplate(w, "Homepage", nil); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	renderTemplate(w, r, "Homepage", nil)
 }
 
 func handleInitPage(w http.ResponseWriter, r *http.Request) {
-	if err := tmpl.ExecuteTemplate(w, "GameInit", nil); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	renderTemplate(w, r, "GameInit", nil)
 }
 
 func handleInitSubmit(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		redirectToError(w, r, http.StatusMethodNotAllowed, "Méthode non autorisée")
 		return
 	}
 
@@ -117,7 +114,7 @@ func handleInitSubmit(w http.ResponseWriter, r *http.Request) {
 	jetonCouleur := r.FormValue("jetoncolor")
 
 	if j1 == "" || j2 == "" {
-		http.Redirect(w, r, "/game/init", http.StatusSeeOther)
+		redirectToError(w, r, http.StatusBadRequest, "Les noms des joueurs sont requis")
 		return
 	}
 
@@ -133,31 +130,29 @@ func handleInitSubmit(w http.ResponseWriter, r *http.Request) {
 func handleGamePlay(w http.ResponseWriter, r *http.Request) {
 
 	if !gameState.Initialized {
-		http.Redirect(w, r, "/game/init", http.StatusSeeOther)
+		redirectToError(w, r, http.StatusBadRequest, "La partie n'a pas été initialisée")
 		return
 	}
 
 	page := buildPageData(gameState, r.URL.Query().Get("msg"))
 
-	if err := tmpl.ExecuteTemplate(w, "GamePlay", page); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	renderTemplate(w, r, "GamePlay", page)
 }
 
 func handleMove(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		redirectToError(w, r, http.StatusMethodNotAllowed, "Méthode non autorisée")
 		return
 	}
 
-	col, err := strconv.Atoi(r.FormValue("column"))
+	col, err := strconv.Atoi(strings.TrimSpace(r.FormValue("column")))
 	if err != nil {
-		http.Redirect(w, r, "/game/play?msg="+url.QueryEscape("Choisissez une colonne valide."), http.StatusSeeOther)
+		redirectToError(w, r, http.StatusBadRequest, "Choisissez une colonne valide.")
 		return
 	}
 
 	if !gameState.Initialized {
-		http.Redirect(w, r, "/game/init", http.StatusSeeOther)
+		redirectToError(w, r, http.StatusBadRequest, "La partie n'a pas été initialisée")
 		return
 	}
 
@@ -171,12 +166,12 @@ func handleMove(w http.ResponseWriter, r *http.Request) {
 
 func handleGameEnd(w http.ResponseWriter, r *http.Request) {
 	if !gameState.Initialized {
-		http.Redirect(w, r, "/game/init", http.StatusSeeOther)
+		redirectToError(w, r, http.StatusBadRequest, "La partie n'a pas été initialisée")
 		return
 	}
 
 	if gameState.Winner == "" && !gameState.Draw {
-		http.Redirect(w, r, "/game/play", http.StatusSeeOther)
+		redirectToError(w, r, http.StatusBadRequest, "La partie n'est pas terminée")
 		return
 	}
 
@@ -192,9 +187,7 @@ func handleGameEnd(w http.ResponseWriter, r *http.Request) {
 		Draw:         gameState.Draw,
 	}
 
-	if err := tmpl.ExecuteTemplate(w, "GameEnd", page); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	renderTemplate(w, r, "GameEnd", page)
 }
 
 func saveGameRecord() {
@@ -278,9 +271,7 @@ func handleLeaderboard(w http.ResponseWriter, r *http.Request) {
 		Records: records,
 	}
 
-	if err := tmpl.ExecuteTemplate(w, "Leaderboard", page); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	renderTemplate(w, r, "Leaderboard", page)
 }
 
 func handleGameGrid(w http.ResponseWriter, r *http.Request) {
@@ -288,7 +279,7 @@ func handleGameGrid(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/game/grid/")
 	id, err := strconv.Atoi(path)
 	if err != nil {
-		http.Error(w, "ID invalide", http.StatusBadRequest)
+		redirectToError(w, r, http.StatusBadRequest, "ID invalide")
 		return
 	}
 
@@ -302,7 +293,7 @@ func handleGameGrid(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if foundRecord == nil {
-		http.Error(w, "Partie non trouvée", http.StatusNotFound)
+		redirectToError(w, r, http.StatusNotFound, "Partie non trouvée")
 		return
 	}
 
@@ -310,9 +301,7 @@ func handleGameGrid(w http.ResponseWriter, r *http.Request) {
 		Record: *foundRecord,
 	}
 
-	if err := tmpl.ExecuteTemplate(w, "GameGrid", page); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	renderTemplate(w, r, "GameGrid", page)
 }
 
 func (g *GameState) Reset(j1, j2, jeton string) {
