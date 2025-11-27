@@ -67,10 +67,8 @@ type GameGridPage struct {
 	Record GameRecord
 }
 
-var (
-	tmpl      *template.Template
-	gameState GameState
-)
+var	tmpl      *template.Template
+var gameState GameState
 
 func main() {
 	var err error
@@ -370,7 +368,7 @@ func (g *GameState) hasWinner(row, col int, token string) bool {
 			return true
 		}
 	}
-
+	
 	return false
 }
 
