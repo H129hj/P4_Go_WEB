@@ -11,26 +11,39 @@
 <header>
     <h1>Puissance 4</h1>
     <nav class="nav-links">
-        <a href="/">Accueil</a>
+        <a href="/" class="nav-btn">Accueil</a>
         {{if or .Winner .Draw}}
-        <span aria-hidden="true">|</span>
-        <a href="/game/init">Recommencer une partie</a>
+        <a href="/game/init" class="nav-btn">Recommencer une partie</a>
         {{end}}
     </nav>
-    <div>
-        <p>Joueur 1 : {{.Joueur1}} ({{.JetonCouleur}})</p>
-        <p>Joueur 2 : {{.Joueur2}}</p>
+    <div class="players-info">
+        <div class="player-card {{if eq .CurrentPlayerIndex 0}}active{{end}}" data-player="1">
+            <div class="player-header">
+                <span class="player-label">Joueur 1</span>
+                <span class="player-token {{.JetonCouleur}}"></span>
+            </div>
+            <div class="player-name">{{.Joueur1}}</div>
+        </div>
+        <div class="player-card {{if eq .CurrentPlayerIndex 1}}active{{end}}" data-player="2">
+            <div class="player-header">
+                <span class="player-label">Joueur 2</span>
+                <span class="player-token {{if eq .JetonCouleur "rouge"}}jaune{{else}}rouge{{end}}"></span>
+            </div>
+            <div class="player-name">{{.Joueur2}}</div>
+        </div>
     </div>
     {{if .Message}}
     <p class="message">{{.Message}}</p>
     {{end}}
-    {{if .Winner}}
-    <p class="status">Gagnant : {{.Winner}}</p>
-    {{else if .Draw}}
-    <p class="status">Match nul !</p>
-    {{else}}
-    <p class="status">Au tour de {{.CurrentPlayerName}}</p>
-    {{end}}
+    <div class="turn-status">
+        {{if .Winner}}
+        <p class="status winner">Gagnant : {{.Winner}}</p>
+        {{else if .Draw}}
+        <p class="status draw">Match nul !</p>
+        {{else}}
+        <p class="status active">Au tour de <span class="current-player">{{.CurrentPlayerName}}</span></p>
+        {{end}}
+    </div>
 </header>
 
 <main>
@@ -61,6 +74,13 @@
         {{end}}
     </section>
 </main>
+{{if or .Winner .Draw}}
+<script>
+    setTimeout(function() {
+        window.location.href = '/game/end';
+    }, 3000);
+</script>
+{{end}}
 </body>
 </html>
 {{end}}

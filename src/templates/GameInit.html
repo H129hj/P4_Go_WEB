@@ -9,28 +9,44 @@
 </head>
 <body>
     <main class="init-container">
-      <h1>Entrez les pseudos des joueurs</h1>
-      <form action="/game/init/traitement" method="POST" class="init-form">
-        <label for="name">Nom du joueur 1 :</label>
-        <input type="text" id="name" name="name" placeholder="Ex : Alice" required>
+      <h1>Entrez les pseudos des joueurs et la couleur</h1>
+      <section class="init-card">
+        <form action="/game/init/traitement" method="POST" class="init-form">
+          <div class="form-group">
+            <label for="name">Nom du joueur 1 :</label>
+            <input type="text" id="name" name="name" placeholder="Ex : Alice" required>
+          </div>
 
-        <br>
+          <div class="form-group">
+            <label for="name2">Nom du joueur 2 :</label>
+            <input type="text" id="name2" name="name2" placeholder="Ex : Bob" required>
+          </div>
 
-        <label for="name2">Nom du joueur 2 :</label>
-        <input type="text" id="name2" name="name2" placeholder="Ex : Bob" required>
+          <div class="form-group">
+            <label>Couleur du jeton (joueur 1) :</label>
+            <div class="color-selection">
+              <label class="color-option">
+                <input type="radio" name="jetoncolor" value="rouge" required checked>
+                <div class="color-preview">
+                  <img src="https://media.ouest-france.fr/v1/pictures/87475e07a1599144362da0321df384b4-267247.jpg?width=1260&client_id=eds&sign=dc2bb7760e332e1bab50f5264d42680e26331b07f80c08f88f9fa88f69982284" alt="Jeton rouge" class="token-image">
+                  <span>Rouge</span>
+                </div>
+              </label>
+              <label class="color-option">
+                <input type="radio" name="jetoncolor" value="jaune" required>
+                <div class="color-preview">
+                  <img src="https://img.freepik.com/photos-gratuite/vue-superieure-du-cercle-jaune-fond-blanc_23-2148209934.jpg?semt=ais_hybrid&w=740&q=80" alt="Jeton jaune" class="token-image">
+                  <span>Jaune</span>
+                </div>
+              </label>
+            </div>
+          </div>
 
-        <br>
-
-        <label for="jetoncolor">Couleur du jeton (joueur 1) :</label>
-        <select id="jetoncolor" name="jetoncolor" required>
-          <option value="rouge">Rouge</option>
-          <option value="jaune">Jaune</option>
-        </select>
-
-        <br>
-
-        <button type="submit" class="start-btn">Commencer la partie</button>
-      </form>
+          <div class="form-group">
+            <button type="submit" class="start-btn">Commencer la partie</button>
+          </div>
+        </form>
+      </section>
   </main>
 </body>
 </html>

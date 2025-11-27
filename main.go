@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
@@ -9,9 +10,9 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
-// Gamestate : l'état de la partie en cours
 type GameState struct {
 	Grid          [6][7]string
 	PlayerNames   [2]string
@@ -20,26 +21,57 @@ type GameState struct {
 	Winner        string
 	Draw          bool
 	Initialized   bool
+	TurnCount     int
 }
 
-// GamePage : Donnees à passer au template de la page de jeu
 type GamePage struct {
-	Grille            [6][7]string
-	Joueur1           string
-	Joueur2           string
-	JetonCouleur      string
-	CurrentPlayerName string
-	CurrentToken      string
-	Winner            string
-	Draw              bool
-	Message           string
-	Columns           []int
+	Grille             [6][7]string
+	Joueur1            string
+	Joueur2            string
+	JetonCouleur       string
+	CurrentPlayerName  string
+	CurrentPlayerIndex int
+	CurrentToken       string
+	Winner             string
+	Draw               bool
+	Message            string
+	Columns            []int
 }
 
-var tmpl *template.Template
-var gameState GameState
+type EndPage struct {
+	Grille       [6][7]string
+	Joueur1      string
+	Joueur2      string
+	JetonCouleur string
+	Winner       string
+	Draw         bool
+}
 
-// Démarre le serveur et configure les routes
+type GameRecord struct {
+	ID           int          `json:"id"`
+	Joueur1      string       `json:"joueur1"`
+	Joueur2      string       `json:"joueur2"`
+	Winner       string       `json:"winner"`
+	Draw         bool         `json:"draw"`
+	Date         time.Time    `json:"date"`
+	TurnCount    int          `json:"turnCount"`
+	Grille       [6][7]string `json:"grille"`
+	JetonCouleur string       `json:"jetonCouleur"`
+}
+
+type LeaderboardPage struct {
+	Records []GameRecord `json:"records"`
+}
+
+type GameGridPage struct {
+	Record GameRecord
+}
+
+var (
+	tmpl      *template.Template
+	gameState GameState
+)
+
 func main() {
 	var err error
 	tmpl, err = template.ParseGlob("./templates/*.html")
@@ -57,12 +89,13 @@ func main() {
 	http.HandleFunc("/game/init/traitement", handleInitSubmit)
 	http.HandleFunc("/game/play", handleGamePlay)
 	http.HandleFunc("/game/play/move", handleMove)
-	http.HandleFunc("/game/scoreboards", handleScoreboards)
+	http.HandleFunc("/game/end", handleGameEnd)
+	http.HandleFunc("/game/leaderboard", handleLeaderboard)
+	http.HandleFunc("/game/grid/", handleGameGrid)
 
 	http.ListenAndServe("localhost:8000", nil)
 }
 
-// Handlers pour les différentes routes
 func handleHomepage(w http.ResponseWriter, r *http.Request) {
 	if err := tmpl.ExecuteTemplate(w, "Homepage", nil); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -81,7 +114,6 @@ func handleInitSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Récupération et validation des données du formulaire
 	j1 := strings.TrimSpace(r.FormValue("name"))
 	j2 := strings.TrimSpace(r.FormValue("name2"))
 	jetonCouleur := r.FormValue("jetoncolor")
@@ -101,13 +133,12 @@ func handleInitSubmit(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGamePlay(w http.ResponseWriter, r *http.Request) {
-	// Vérification que le jeu est initialisé
+
 	if !gameState.Initialized {
 		http.Redirect(w, r, "/game/init", http.StatusSeeOther)
 		return
 	}
 
-	// Données pour le template de la page de jeu
 	page := buildPageData(gameState, r.URL.Query().Get("msg"))
 
 	if err := tmpl.ExecuteTemplate(w, "GamePlay", page); err != nil {
@@ -115,8 +146,6 @@ func handleGamePlay(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-// Handler pour le traitement des coups joués
 func handleMove(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
@@ -129,6 +158,11 @@ func handleMove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !gameState.Initialized {
+		http.Redirect(w, r, "/game/init", http.StatusSeeOther)
+		return
+	}
+
 	if dropErr := gameState.Drop(col); dropErr != nil {
 		http.Redirect(w, r, "/game/play?msg="+url.QueryEscape(dropErr.Error()), http.StatusSeeOther)
 		return
@@ -137,13 +171,152 @@ func handleMove(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/game/play", http.StatusSeeOther)
 }
 
-func handleScoreboards(w http.ResponseWriter, r *http.Request) {
-	if err := tmpl.ExecuteTemplate(w, "Scoreboards", nil); err != nil {
+func handleGameEnd(w http.ResponseWriter, r *http.Request) {
+	if !gameState.Initialized {
+		http.Redirect(w, r, "/game/init", http.StatusSeeOther)
+		return
+	}
+
+	if gameState.Winner == "" && !gameState.Draw {
+		http.Redirect(w, r, "/game/play", http.StatusSeeOther)
+		return
+	}
+
+	// Sauvegarder la partie dans le leaderboard
+	saveGameRecord()
+
+	page := EndPage{
+		Grille:       gameState.Grid,
+		Joueur1:      gameState.PlayerNames[0],
+		Joueur2:      gameState.PlayerNames[1],
+		JetonCouleur: gameState.PlayerTokens[0],
+		Winner:       gameState.Winner,
+		Draw:         gameState.Draw,
+	}
+
+	if err := tmpl.ExecuteTemplate(w, "GameEnd", page); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
-// Réinitialise l'état du jeu avec la page game/init
+func saveGameRecord() {
+	// Lire les records existants pour obtenir le prochain ID
+	records := loadGameRecords()
+	nextID := 1
+	if len(records) > 0 {
+		maxID := 0
+		for _, r := range records {
+			if r.ID > maxID {
+				maxID = r.ID
+			}
+		}
+		nextID = maxID + 1
+	}
+
+	record := GameRecord{
+		ID:           nextID,
+		Joueur1:      gameState.PlayerNames[0],
+		Joueur2:      gameState.PlayerNames[1],
+		Winner:       gameState.Winner,
+		Draw:         gameState.Draw,
+		Date:         time.Now(),
+		TurnCount:    gameState.TurnCount,
+		Grille:       gameState.Grid,
+		JetonCouleur: gameState.PlayerTokens[0],
+	}
+
+	records = append(records, record)
+
+	// Sauvegarder dans le fichier
+	file, err := os.OpenFile("leaderboard.txt", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		fmt.Printf("Erreur lors de l'ouverture du fichier: %v\n", err)
+		return
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(records); err != nil {
+		fmt.Printf("Erreur lors de l'écriture: %v\n", err)
+		return
+	}
+}
+
+func loadGameRecords() []GameRecord {
+	file, err := os.Open("leaderboard.txt")
+	if err != nil {
+		// Si le fichier n'existe pas, retourner une liste vide
+		return []GameRecord{}
+	}
+	defer file.Close()
+
+	var records []GameRecord
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&records); err != nil {
+		// Si erreur de décodage, retourner une liste vide
+		return []GameRecord{}
+	}
+
+	// Assigner des IDs aux anciennes parties qui n'en ont pas
+	for i := range records {
+		if records[i].ID == 0 {
+			records[i].ID = i + 1
+		}
+	}
+
+	return records
+}
+
+func handleLeaderboard(w http.ResponseWriter, r *http.Request) {
+	records := loadGameRecords()
+
+	// Inverser l'ordre pour afficher les plus récents en premier
+	for i, j := 0, len(records)-1; i < j; i, j = i+1, j-1 {
+		records[i], records[j] = records[j], records[i]
+	}
+
+	page := LeaderboardPage{
+		Records: records,
+	}
+
+	if err := tmpl.ExecuteTemplate(w, "Leaderboard", page); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func handleGameGrid(w http.ResponseWriter, r *http.Request) {
+	// Extraire l'ID de l'URL (format: /game/grid/123)
+	path := strings.TrimPrefix(r.URL.Path, "/game/grid/")
+	id, err := strconv.Atoi(path)
+	if err != nil {
+		http.Error(w, "ID invalide", http.StatusBadRequest)
+		return
+	}
+
+	records := loadGameRecords()
+	var foundRecord *GameRecord
+	for _, record := range records {
+		if record.ID == id {
+			foundRecord = &record
+			break
+		}
+	}
+
+	if foundRecord == nil {
+		http.Error(w, "Partie non trouvée", http.StatusNotFound)
+		return
+	}
+
+	page := GameGridPage{
+		Record: *foundRecord,
+	}
+
+	if err := tmpl.ExecuteTemplate(w, "GameGrid", page); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 func (g *GameState) Reset(j1, j2, jeton string) {
 	g.Grid = [6][7]string{}
 	g.PlayerNames = [2]string{j1, j2}
@@ -156,9 +329,9 @@ func (g *GameState) Reset(j1, j2, jeton string) {
 	g.Winner = ""
 	g.Draw = false
 	g.Initialized = true
+	g.TurnCount = 0
 }
 
-// Logique pour déposer un jeton dans une colonne et vérifie l'état du jeu (gagnant, match nul)
 func (g *GameState) Drop(column int) error {
 	if g.Winner != "" || g.Draw {
 		return errors.New("La partie est terminée.")
@@ -172,6 +345,7 @@ func (g *GameState) Drop(column int) error {
 		if g.Grid[row][column] == "" {
 			token := g.PlayerTokens[g.CurrentPlayer]
 			g.Grid[row][column] = token
+			g.TurnCount++
 
 			if g.hasWinner(row, column, token) {
 				g.Winner = g.PlayerNames[g.CurrentPlayer]
@@ -187,7 +361,6 @@ func (g *GameState) Drop(column int) error {
 	return errors.New("Cette colonne est pleine.")
 }
 
-// Vérifie si un joueur a gagné
 func (g *GameState) hasWinner(row, col int, token string) bool {
 	directions := [][2]int{{0, 1}, {1, 0}, {1, 1}, {1, -1}}
 
@@ -201,8 +374,6 @@ func (g *GameState) hasWinner(row, col int, token string) bool {
 	return false
 }
 
-
-// Compte le nombre de jetons consécutifs dans une direction donnée
 func (g *GameState) countDirection(row, col, dr, dc int, token string) int {
 	count := 0
 	rCur := row + dr
@@ -217,7 +388,6 @@ func (g *GameState) countDirection(row, col, dr, dc int, token string) int {
 	return count
 }
 
-// Vérifie si le plateau est plein (match nul)
 func (g *GameState) isBoardFull() bool {
 	for _, cell := range g.Grid[0] {
 		if cell == "" {
@@ -228,7 +398,6 @@ func (g *GameState) isBoardFull() bool {
 	return true
 }
 
-// Construit les données à passer au template de la page de jeu
 func buildPageData(state GameState, message string) GamePage {
 	columns := make([]int, len(state.Grid[0]))
 	for i := range columns {
@@ -242,16 +411,22 @@ func buildPageData(state GameState, message string) GamePage {
 		currentToken = ""
 	}
 
+	currentPlayerIndex := -1
+	if state.Winner == "" && !state.Draw {
+		currentPlayerIndex = state.CurrentPlayer
+	}
+
 	return GamePage{
-		Grille:            state.Grid,
-		Joueur1:           state.PlayerNames[0],
-		Joueur2:           state.PlayerNames[1],
-		JetonCouleur:      state.PlayerTokens[0],
-		CurrentPlayerName: currentName,
-		CurrentToken:      currentToken,
-		Winner:            state.Winner,
-		Draw:              state.Draw,
-		Message:           message,
-		Columns:           columns,
+		Grille:             state.Grid,
+		Joueur1:            state.PlayerNames[0],
+		Joueur2:            state.PlayerNames[1],
+		JetonCouleur:       state.PlayerTokens[0],
+		CurrentPlayerName:  currentName,
+		CurrentPlayerIndex: currentPlayerIndex,
+		CurrentToken:       currentToken,
+		Winner:             state.Winner,
+		Draw:               state.Draw,
+		Message:            message,
+		Columns:            columns,
 	}
 }

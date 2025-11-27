@@ -1,0 +1,39 @@
+{{define "GameEnd"}}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/game.css">
+    <title>Fin de partie - Puissance 4</title>
+</head>
+<body>
+<header>
+    <h1>Puissance 4</h1>
+    <nav class="nav-links">
+        <a href="/" class="nav-btn">Accueil</a>
+        <a href="/game/init" class="nav-btn">Nouvelle partie</a>
+        <a href="/game/leaderboard" class="nav-btn">Leaderboard</a>
+    </nav>
+</header>
+
+<main class="end-game-main">
+    <div class="end-game-result">
+        <h2 class="end-game-title">Fin de partie</h2>
+        {{if .Winner}}
+        <div class="winner-display">
+            <p class="winner-label">Gagnant</p>
+            <p class="winner-name">{{.Winner}}</p>
+        </div>
+        {{else if .Draw}}
+        <div class="draw-display">
+            <p class="draw-label">Match nul !</p>
+            <p class="draw-text">Aucun gagnant</p>
+        </div>
+        {{end}}
+    </div>
+</main>
+</body>
+</html>
+{{end}}
+

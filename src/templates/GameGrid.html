@@ -1,0 +1,59 @@
+{{define "GameGrid"}}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/game.css">
+    <title>Grille de partie - Puissance 4</title>
+</head>
+<body>
+<header>
+    <h1>Puissance 4</h1>
+    <nav class="nav-links">
+        <a href="/" class="nav-btn">Accueil</a>
+        <a href="/game/leaderboard" class="nav-btn">Leaderboard</a>
+    </nav>
+</header>
+
+<main class="grid-view-main">
+    <div class="grid-view-info">
+        <div class="grid-view-details">
+            <h2>Partie du {{.Record.Date.Format "02/01/2006 à 15:04"}}</h2>
+            <div class="grid-players">
+                <div class="grid-player">
+                    <span class="grid-player-label">Joueur 1:</span>
+                    <span class="grid-player-name">{{.Record.Joueur1}}</span>
+                    <span class="player-token {{.Record.JetonCouleur}}"></span>
+                </div>
+                <div class="grid-player">
+                    <span class="grid-player-label">Joueur 2:</span>
+                    <span class="grid-player-name">{{.Record.Joueur2}}</span>
+                    <span class="player-token {{if eq .Record.JetonCouleur "rouge"}}jaune{{else}}rouge{{end}}"></span>
+                </div>
+            </div>
+            <div class="grid-result">
+                {{if .Record.Draw}}
+                <p class="result-draw">Match nul !</p>
+                {{else}}
+                <p class="result-winner">Gagnant: {{.Record.Winner}}</p>
+                {{end}}
+                <p class="grid-turns">Nombre de tours: {{.Record.TurnCount}}</p>
+            </div>
+        </div>
+    </div>
+
+    <section class="grille grid-view-grille">
+        {{range .Record.Grille}}
+        <div class="ligne">
+            {{range .}}
+            <div class="cellule {{.}}"></div>
+            {{end}}
+        </div>
+        {{end}}
+    </section>
+</main>
+</body>
+</html>
+{{end}}
+

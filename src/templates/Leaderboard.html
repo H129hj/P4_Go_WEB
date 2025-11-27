@@ -1,0 +1,67 @@
+{{define "Leaderboard"}}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/game.css">
+    <title>Leaderboard - Puissance 4</title>
+</head>
+<body>
+<header>
+    <h1>Puissance 4</h1>
+    <nav class="nav-links">
+        <a href="/" class="nav-btn">Accueil</a>
+        <a href="/game/init" class="nav-btn">Nouvelle partie</a>
+    </nav>
+</header>
+
+<main class="leaderboard-main">
+    <div class="leaderboard-container">
+        <h2 class="leaderboard-title">Leaderboard</h2>
+        {{if .Records}}
+        <div class="leaderboard-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Joueur 1</th>
+                        <th>Joueur 2</th>
+                        <th>Résultat</th>
+                        <th>Nombre de tours</th>
+                        <th>Grille</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Records}}
+                    <tr>
+                        <td>{{.Date.Format "02/01/2006 15:04"}}</td>
+                        <td>{{.Joueur1}}</td>
+                        <td>{{.Joueur2}}</td>
+                        <td>
+                            {{if .Draw}}
+                            <span class="result-draw">Match nul</span>
+                            {{else}}
+                            <span class="result-winner">Gagnant: {{.Winner}}</span>
+                            {{end}}
+                        </td>
+                        <td>{{.TurnCount}}</td>
+                        <td>
+                            <a href="/game/grid/{{.ID}}" class="grid-btn">Voir la grille</a>
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+        {{else}}
+        <div class="no-records">
+            <p>Aucune partie enregistrée pour le moment.</p>
+        </div>
+        {{end}}
+    </div>
+</main>
+</body>
+</html>
+{{end}}
+
