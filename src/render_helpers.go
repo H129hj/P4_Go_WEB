@@ -7,7 +7,7 @@ import (
 
 func renderTemplate(w http.ResponseWriter, r *http.Request, name string, data interface{}) {
 	var buffer bytes.Buffer
-	if err := tmpl.ExecuteTemplate(&buffer, name, data); err != nil {
+	if err := temp.ExecuteTemplate(&buffer, name, data); err != nil {
 		redirectToError(w, r, http.StatusInternalServerError, "Erreur lors du chargement de la page")
 		return
 	}

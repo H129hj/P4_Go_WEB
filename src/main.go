@@ -67,12 +67,12 @@ type GameGridPage struct {
 	Record GameRecord
 }
 
-var tmpl *template.Template
+var temp *template.Template
 var gameState GameState
 
 func main() {
 	var err error
-	tmpl, err = template.ParseGlob("./templates/*.html")
+	temp, err = template.ParseGlob("./templates/*.html")
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
