@@ -13,12 +13,7 @@ go run .
 ```
 
 ## Prèrequis 
-Installation de golang
-```bash
-https://go.dev/
-```
-
-
+Installation du language GO 
 
 ## Description
 Puissance 4 Web reprend les règles classiques (grille 6x7, deux joueurs). L’application propose un parcours complet : accueil, configuration des joueurs, partie, fin et historique des matchs.
