@@ -2,11 +2,23 @@
 Ce projet est une implémentation web du jeu Puissance 4 en Go. Il sert de support pour pratiquer Go, le templating HTML et la persistance simple côté serveur.
 
 ## Comment lancer le serveur :
+```bash
+git clone https://github.com/H129hj/P4_Go_WEB
+cd P4_Go_WEB
+```
 
 ```bash
 cd src
 go run .
 ```
+
+## Prèrequis 
+Installation de golang
+```bash
+https://go.dev/
+```
+
+
 
 ## Description
 Puissance 4 Web reprend les règles classiques (grille 6x7, deux joueurs). L’application propose un parcours complet : accueil, configuration des joueurs, partie, fin et historique des matchs.
