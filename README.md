@@ -1,55 +1,56 @@
-P4_Web_Hugo_Shakil
-Ce projet est une implémentation web du jeu Puissance 4 en Go. Il a été développé dans le cadre d’un projet scolaire pour pratiquer la programmation Go, le templating HTML et le stockage local de données de parties.
+# P4_Web_Hugo_Shakil
+Ce projet est une implémentation web du jeu Puissance 4 en Go. Il sert de support pour pratiquer Go, le templating HTML et la persistance simple côté serveur.
 
-Comment lancer le jeu
-Il y a deux façons de lancer l’application :
+## Comment lancer le jeu
+Il existe deux méthodes :
 
-Utiliser l’exécutable (méthode la plus simple) :
+### 1. Exécutable (la plus simple)
+- Double-cliquez sur `P4_Web.exe`
+- Ou lancez `.\P4_Web.exe` depuis un terminal
 
-Double-cliquez sur P4_Web.exe
-Ou dans un terminal : .\P4_Web.exe
-Avec le code source (nécessite Go installé) :
-
+### 2. Code source (Go requis)
+```bash
 cd src
 go run main.go
+```
 
-Description
-Puissance 4 Web est un jeu de stratégie à deux joueurs où l’objectif est d’aligner quatre pions sur une grille 6x7. L’interface est servie via HTTP et propose un flux complet : accueil, configuration des joueurs, partie, fin et historique.
+## Description
+Puissance 4 Web reprend les règles classiques (grille 6x7, deux joueurs). L’application propose un parcours complet : accueil, configuration des joueurs, partie, fin et historique des matchs.
 
-Fonctionnalités
-Interface web responsive (HTML/CSS)
-Saisie des pseudos + choix visuel des couleurs de jeton
-Affichage dynamique du tour courant et des colonnes jouables
-Redirection automatique vers la page de fin après la victoire (timer 3s)
-Leaderboard persistant (leaderboard.txt) avec date, vainqueur, nombre de tours
-Bouton pour consulter la grille finale de chaque partie enregistrée
-Détection de victoire (horizontale, verticale, diagonale) et d’égalité
+## Fonctionnalités
+- Interface web responsive (HTML/CSS)
+- Saisie des pseudos + choix visuel de la couleur du joueur 1
+- Indicateur de tour et boutons colonne alignés à la grille
+- Redirection automatique vers la page de fin (timer 3 s)
+- Leaderboard persistant (`leaderboard.txt`) avec date, vainqueur, nombre de tours
+- Accès à la grille finale depuis le leaderboard
+- Détection des victoires horizontales, verticales, diagonales + détection du nul
 
-Comment jouer
-Accédez à http://localhost:8000 (lancement requis)
-Depuis la page d’accueil, cliquez sur “Commencer une partie”
-Entrez les pseudos, choisissez la couleur du joueur 1 puis validez
-Sur la page de jeu, sélectionnez la colonne désirée pour laisser tomber un jeton
-La partie se termine lorsqu’un joueur aligne 4 pions ou que la grille est pleine
-Consultez la page de fin ou le leaderboard pour revoir le résultat
+## Comment jouer
+1. Ouvrez `http://localhost:8000`
+2. Cliquez sur **Commencer une partie**
+3. Renseignez les pseudos, choisissez la couleur du joueur 1 puis validez
+4. Depuis la page de jeu, cliquez sur une colonne pour lâcher un pion
+5. Attendez la fin de partie ou la redirection automatique pour consulter le résultat
+6. Utilisez le leaderboard pour revoir les parties passées et leurs grilles
 
-Commandes
-Colonnes 0-6 via les boutons fléchés (une colonne = un bouton)
-“Nouvelle partie” : revient au formulaire d’initialisation
-“Leaderboard” : liste toutes les parties avec accès aux grilles finales
+## Commandes
+- Boutons fléchés sous chaque colonne : déposer un jeton
+- **Nouvelle partie** : retour à la configuration
+- **Leaderboard** : liste les parties et propose “Voir la grille”
 
-Structure du projet
-assets/ css/ : fichiers de style (style.css, game.css)
-templates/ : vues HTML (Homepage, GameInit, GamePlay, GameEnd, Leaderboard, GameGrid)
-leaderboard.txt : stockage JSON des parties
-src/main.go : serveur HTTP, logique métier et persistance
+## Structure du projet
+- `assets/css/` : styles globaux (`style.css`, `game.css`)
+- `templates/` : vues HTML (`Homepage`, `GameInit`, `GamePlay`, `GameEnd`, `Leaderboard`, `GameGrid`)
+- `leaderboard.txt` : stockage JSON des parties terminées
+- `src/main.go` : serveur HTTP, logique métier, persistance
 
-Notes techniques
-Serveur Go standard (net/http), rendu via html/template
-Grille stockée en mémoire et sérialisée entre les parties
-Leaderboard écrit/lu en JSON (encoding/json) sur fichier local
-Animation et interactions réalisées uniquement côté client (pas de JS build tool)
+## Notes techniques
+- Serveur Go standard (`net/http`) + `html/template`
+- Grille stockée en mémoire puis sérialisée en JSON
+- Leaderboard géré via `encoding/json` sur un fichier local
+- Aucun bundler JS : interactions simples réalisées en HTML/CSS + JS natif léger
 
-Développé par
-BERTON Hugo
-KHALDI Shakil
+## Développé par
+- BERTON Hugo
+- KHALDI Shakil
